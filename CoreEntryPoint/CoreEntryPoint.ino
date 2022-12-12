@@ -143,7 +143,7 @@ void modulesConnections()
   ledModule.onNextcolor([] (int idx, int v, int up) { // lambda function for more actions
                         if (v == 0)
                         {
-                          audioModule.beep(125, 1);
+                          audioModule.beep(125, 0.1);
                         }
   });
 }

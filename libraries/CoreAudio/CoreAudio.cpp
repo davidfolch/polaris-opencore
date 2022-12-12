@@ -90,12 +90,12 @@ void CoreAudio::action( int id ) {
       currentVolume += (MAX_VOLUME * 0.25); // Volume increases in 25% increments, giving 4 levels (25%, 50%, 75%, 100%) plus mute
       if (currentVolume > MAX_VOLUME) // Mute
       {
-        beep(125, MAX_VOLUME); // Two beeps for mute
-        beep(125, MAX_VOLUME);
+        beep(125, 0.1); // Two beeps for mute
+        beep(125, 0.1);
         currentVolume = 0;
         return;
       }
-      beep(500*currentVolume, currentVolume); // One beep at current volume, varying length depending on volume setting
+      beep(500*currentVolume, 0.1); // One beep at current volume, varying length depending on volume setting
       return;
     case ENT_ARM:
       useSmoothSwing = checkSmoothSwing();
