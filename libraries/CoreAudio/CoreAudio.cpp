@@ -87,7 +87,7 @@ void CoreAudio::action( int id ) {
     case EXT_IDLE:
       return;
     case ENT_VOLUME:
-      currentVolume += (MAX_VOLUME * 0.25); // Volume increases in 25% increments, giving 4 levels (25%, 50%, 75%, 100%) plus mute
+      currentVolume += (MAX_VOLUME * VOLUME_INCREMENT); // Volume increases in 25% increments, giving 4 levels (25%, 50%, 75%, 100%) plus mute
       if (currentVolume > MAX_VOLUME) // Mute
       {
         beep(125, 0.1); // Two beeps for mute
