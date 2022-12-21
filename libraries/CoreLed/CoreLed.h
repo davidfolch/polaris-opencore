@@ -63,12 +63,12 @@ class CoreLed: public Machine {
   static constexpr int CHARGE_SEQUENCE_BLINK_TIME = 300;
   static constexpr int RECHARGING_BLINK_TIME = 300;
   static constexpr int ARMING_BLINK_TIME = 200;
-  static constexpr int TIME_FOR_START_COLOR_SELECTION = 5000;
+  static constexpr int TIME_FOR_START_COLOR_SELECTION = 3000;
   static constexpr int TIME_FOR_COLOR_SELECTION = 1000;
   static constexpr int COLOR_SELECTION_BLINK_TIME = 500;
   static constexpr int CLASH_BLINK_TIME = 200;
   static constexpr int FADE_DELAY = 30;
-  static constexpr int FADE_IN_TIME = 300;
+  static constexpr int FADE_IN_TIME = 1000;
   static constexpr int FADE_OUT_TIME = 1000;
   CoreSettings* moduleSettings;
   int numberOfColorChanged = 0;
