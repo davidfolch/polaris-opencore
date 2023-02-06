@@ -19,7 +19,7 @@
 #define CHANNEL_SMOOTH_SWING_A 3
 #define CHANNEL_SMOOTH_SWING_B 4
 
-#define BEEP_FREQUENCY 1000
+#define BEEP_FREQUENCY 500
 #define AUDIO_BLOCK 16
 
 class CoreAudio: public Machine {
@@ -86,7 +86,7 @@ class CoreAudio: public Machine {
   // Params that can be tuned
   static constexpr float MAX_VOLUME = 1;                // 1 is the max volume. Use a lower number to be more quite e.g. at home
   float currentVolume = MAX_VOLUME;                            // Initial volume. Initally setting to max volume; may later load this from stored config
-  static constexpr float VOLUME_INCREMENT = 1;
+  static constexpr float VOLUME_INCREMENT = 0.5;
   bool firstTap = true;                                 // used to check for the first tap of a mute cycle
   bool useSmoothSwing = true;                           // smoothswing is used by default of proper files are loaded. If no smoothswing are present, then the normal swing is used automatically
                                                         // SmoothSwing V2, based on Thexter's excellent work.
