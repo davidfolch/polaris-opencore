@@ -85,14 +85,20 @@ void CoreAudio::action( int id ) {
         } 
       return;
     case EXT_IDLE:
+      if (currentVolume == 0) // If saber was muted on last disarm, set volume to max
+      {
+        currentVolume = MAX_VOLUME;
+      }
+      firstTap = true;
       return;
     case ENT_VOLUME:
       currentVolume += (MAX_VOLUME * VOLUME_INCREMENT); // Volume increases in 25% increments, giving 4 levels (25%, 50%, 75%, 100%) plus mute
-      if (currentVolume > MAX_VOLUME) // Mute
+      if (currentVolume > MAX_VOLUME || firstTap) // Mute
       {
         beep(125, 0.1); // Two beeps for mute
         beep(125, 0.1);
         currentVolume = 0;
+        firstTap = false;
         return;
       }
       beep(500*currentVolume, 0.1); // One beep at current volume, varying length depending on volume setting
