@@ -36,9 +36,11 @@ class CoreLed: public Machine {
   CoreLed& clash( void );
   CoreLed& disarm( void );
   void reset_color_timer();
+  void batteryCheck( void );
+  void pulse(const ColorLed& cLed);
 
  private:
-  enum { ENT_IDLE, LP_IDLE, ENT_RECHARGE, LP_RECHARGE, ENT_ARM, LP_ARM, EXT_ARM, ENT_ARMED, ENT_CLASH, ENT_SWING, ENT_DISARM }; // ACTIONS
+  enum { ENT_IDLE, LP_IDLE, ENT_RECHARGE, LP_RECHARGE, ENT_ARM, LP_ARM, EXT_IDLE, EXT_ARM, ENT_ARMED, ENT_CLASH, ENT_SWING, ENT_DISARM }; // ACTIONS
   enum { ON_ARM, ON_ARMED, ON_CLASH, ON_DISARM, ON_NEXTCOLOR, ON_RECHARGE, ON_SWING, CONN_MAX }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id );
@@ -70,8 +72,11 @@ class CoreLed: public Machine {
   static constexpr int FADE_DELAY = 30;
   static constexpr int FADE_IN_TIME = 1000;
   static constexpr int FADE_OUT_TIME = 1000;
+  static constexpr int PULSE_DELAY = 30;
+  static constexpr int PULSE_TIME = 500;
   CoreSettings* moduleSettings;
   int numberOfColorChanged = 0;
+  bool batteryCharged = false;
 };
 
 /* 
@@ -81,7 +86,7 @@ Automaton::ATML::begin - Automaton Markup Language
 <machines>
   <machine name="CoreLed">
     <states>
-      <IDLE index="0" on_enter="ENT_IDLE" on_loop="LP_IDLE">
+      <IDLE index="0" on_enter="ENT_IDLE" on_loop="LP_IDLE" on_exit="EXT_IDLE">
         <EVT_RECHARGE>RECHARGE</EVT_RECHARGE>
         <EVT_ARM>ARM</EVT_ARM>
         <EVT_ARMED>ARMED</EVT_ARM>

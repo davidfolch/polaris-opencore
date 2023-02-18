@@ -8,7 +8,7 @@ CoreLed& CoreLed::begin(CoreSettings* cSet) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER      ON_LOOP  ON_EXIT  EVT_IDLE  EVT_RECHARGE  EVT_ARM  EVT_ARMED  EVT_SWING  EVT_CLASH  EVT_DISARM   ELSE */
-    /*     IDLE */     ENT_IDLE,     LP_IDLE,      -1,       -1,     RECHARGE,     ARM,     ARMED,        -1,        -1,         -1,    -1,   
+    /*     IDLE */     ENT_IDLE,     LP_IDLE,      EXT_IDLE,       -1,     RECHARGE,     ARM,     ARMED,        -1,        -1,         -1,    -1,   
     /* RECHARGE */ ENT_RECHARGE, LP_RECHARGE,      -1,     IDLE,           -1,     ARM,        -1,        -1,        -1,         -1,    -1,
     /*      ARM */      ENT_ARM,      LP_ARM, EXT_ARM,       -1,           -1,      -1,     ARMED,        -1,        -1,         -1,    -1,
     /*    ARMED */    ENT_ARMED,          -1,      -1,       -1,           -1,      -1,        -1,     SWING,     CLASH,     DISARM,    -1,
@@ -71,6 +71,8 @@ void CoreLed::action( int id ) {
   switch ( id ) {
     case ENT_IDLE:
       turnOff();
+      batteryCharged = false;
+      getCurrentColorSet();
       return;
     case LP_IDLE:
       return;
@@ -85,31 +87,27 @@ void CoreLed::action( int id ) {
       delay(CHARGE_SEQUENCE_BLINK_TIME);
       turnOff();
       timer_blink.setFromNow(this,BLINK_RECHARGE_STATUS_TIMER);
+      batteryCharged = false;
       return;
     case LP_RECHARGE:
       if (timer_blink.expired( this ))
       {
-        if (digitalRead(CHARGE_PIN) == LOW)
+        if (digitalRead(STANDBY_PIN) == LOW || batteryCharged)
         {
-          changeColor({255,0,0,0}); // RED
-          delay(RECHARGING_BLINK_TIME);
-          turnOff();
-          timer_blink.setFromNow(this,BLINK_RECHARGE_STATUS_TIMER);
-        }
-        if (digitalRead(STANDBY_PIN) == LOW)
-        {
-          changeColor({0,0,255,0}); // BLUE
-          delay(RECHARGING_BLINK_TIME);
-          turnOff();
+          batteryCharged = true;
+          pulse({0,0,255,0}); // BLUE
           timer_blink.setFromNow(this,BLINK_RECHARGED_STATUS_TIMER);
+        }
+        else if (digitalRead(CHARGE_PIN) == LOW)
+        {
+          pulse({255,0,0,0}); // RED
+          timer_blink.setFromNow(this,BLINK_RECHARGE_STATUS_TIMER);
         }
       }
       return;
     case ENT_ARM:
-      getCurrentColorSet();
-      changeColor(mainColor);
       delay(ARMING_BLINK_TIME);
-      turnOff();
+      fadeOut();
       timer_color_selection.setFromNow(this,TIME_FOR_START_COLOR_SELECTION);
       numberOfColorChanged = 0;
       return;
@@ -128,16 +126,19 @@ void CoreLed::action( int id ) {
         }
         setCurrentColorSet(currentColorSetId);
         changeColor(mainColor);
+        fadeIn();
         delay(COLOR_SELECTION_BLINK_TIME);
-        turnOff();
+        fadeOut();
         timer_color_selection.setFromNow(this,TIME_FOR_COLOR_SELECTION);
       }
+      return;
+    case EXT_IDLE:
+      fadeIn();
       return;
     case EXT_ARM:
       fadeIn();
       return;
     case ENT_ARMED:
-      getCurrentColorSet();
       changeColor(mainColor);
       return;
     case ENT_CLASH:
@@ -213,7 +214,7 @@ void CoreLed::fadeIn()
 
 void CoreLed::fadeOut()
 {
-  CoreLogging::writeLine("CoreLed: FadeIn");
+  CoreLogging::writeLine("CoreLed: FadeOut");
   for (int i = FADE_DELAY; i >= 0; i--)
   {
     singleStepColor.red = mainColor.red / FADE_DELAY * i;
@@ -225,6 +226,27 @@ void CoreLed::fadeOut()
   }
 }
 
+void CoreLed::pulse(const ColorLed& cLed)
+{
+  for (int i = 0; i <= PULSE_DELAY; i++)
+  {
+    singleStepColor.red = cLed.red / PULSE_DELAY * i;
+    singleStepColor.green = cLed.green / PULSE_DELAY * i;
+    singleStepColor.blue = cLed.blue / PULSE_DELAY * i;
+    singleStepColor.white = cLed.white / PULSE_DELAY * i;
+    changeColor(singleStepColor);
+    delay(PULSE_TIME / 2 / PULSE_DELAY);
+  }
+  for (int i = FADE_DELAY; i >= 0; i--)
+  {
+    singleStepColor.red = cLed.red / PULSE_DELAY * i;
+    singleStepColor.green = cLed.green / PULSE_DELAY * i;
+    singleStepColor.blue = cLed.blue / PULSE_DELAY * i;
+    singleStepColor.white = cLed.white / PULSE_DELAY * i;
+    changeColor(singleStepColor);
+    delay(PULSE_TIME / 2 / PULSE_DELAY);
+  }
+}
 
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
