@@ -79,7 +79,7 @@ class CoreMotion: public Machine {
   static constexpr int TIME_FOR_ALT_START_ARM = 3000;
   static constexpr int TIME_FOR_DISARM = 1500;
   static constexpr int TIME_FOR_CONFIRM_ARM = 200;
-  static constexpr int TIME_FOR_REARM = 0; // set to 0 to disable rearm possibility during disarm
+  static constexpr int TIME_FOR_REARM = 300; // set to 0 to disable rearm possibility during disarm
 };
 
 /* 
