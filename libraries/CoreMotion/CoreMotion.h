@@ -53,7 +53,6 @@ class CoreMotion: public Machine {
   atm_timer_millis timer_no_vertical;
   atm_timer_millis timer_horizontal;
   atm_timer_millis timer_arm;
-  atm_timer_millis timer_rolling;
   float AccelX;
   float AccelY;
   float AccelZ;
