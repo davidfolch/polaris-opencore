@@ -86,7 +86,7 @@ void CoreMotion::action( int id ) {
       return;
     case LP_IDLE:
       if(abs(GyroZ) > ROLL_SPEED_THRESHOLD_LOW) {
-        timer_rolling.setFromNow(this, 25);
+        timer_rolling.setFromNow(this, 100);
       }
       if(timer_rolling.expired( this ) && AccelZ >= (VERTICAL_POSITION - TOLERANCE_VERTICAL_POSITION)) {
         timer_vertical.setFromNow(this,TIME_FOR_ALT_START_ARM);
